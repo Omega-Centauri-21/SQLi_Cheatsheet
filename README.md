@@ -7,7 +7,8 @@ A basics revise for all that need to see it
 Command | Description
 --- | --- 
 ***General***
-mysql -u root -h <IP/host_addr> -P < Port > -p | to login to mysql database
+mysql -u <username> -p | to login to mysql database
+mysql -u <username> -h <IP/host_addr> -P < Port > -p | to login to remote mysql database
 SHOW DATABASES	| List available databases
 USE users |	Switch to database
 ***Tables***	
@@ -44,10 +45,22 @@ SELECT * FROM logins WHERE username LIKE 'T_m' | To find first names which start
 - NOT ( ! )
 - AND ( && )
 - OR ( || )
+  
+# SQL Fingerprinting
+  As an initial guess, if the webserver we see in HTTP responses is Apache or Nginx, it is a good guess that the webserver is running on Linux, so the DBMS is likely MySQL. The same also applies to Microsoft DBMS if the webserver is IIS, so it is likely to be MSSQL. However, this is a far-fetched guess, as many other databases can be used on either operating system or web server. So, there are different queries we can test to fingerprint the type of database we are dealing with.
+
+As for now let us fingerprint MySQL databases. The following queries and their output will tell us that we are dealing with MySQL:
+
+***Payload*** |	***When to Use*** |	***Expected Output*** |	***Wrong Output***
+  -- | -- | -- | --
+SELECT @@version |	When we have full query output |	MySQL Version 'i.e. 10.3.22-MariaDB-1ubuntu1' |	In MSSQL it returns MSSQL version. Error with other DBMS.
+SELECT POW(1,1) |	When we only have numeric output	|  1	| Error with other DBMS
+SELECT SLEEP(5)	| Blind/No Output	| Delays page response for 5 seconds and returns 0.	| Will not delay response with other DBMS
 
 # SQL Injections
   
    ***SQLi Discovery***
+  
   Before we start subverting the web application's logic and attempting to bypass the authentication, we first have to test whether the login form is vulnerable to SQL injection. To do that, we will try to add one of the below payloads after our username and see if it causes any errors or changes how the page behaves:
   
 **Payload** | **URL Encoded**
